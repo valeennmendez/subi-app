@@ -1,7 +1,8 @@
 import { Router } from 'express';
 import { rateLimit } from 'express-rate-limit';
-import { login, logout, register } from '../controllers/auth.controller.js';
+import { login, logout, me, register } from '../controllers/auth.controller.js';
 import { AppError } from '../errors/AppError.js';
+import { requireAuth } from '../middlewares/auth.middleware.js';
 import { validate } from '../middlewares/validate.middleware.js';
 import { loginSchema, registerSchema } from '../validators/auth.validator.js';
 
@@ -46,3 +47,4 @@ authRouter.post(
 );
 authRouter.post('/login', loginLimiter, validate(loginSchema), login);
 authRouter.post('/logout', logout);
+authRouter.get('/me', requireAuth, me);
