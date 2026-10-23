@@ -22,3 +22,15 @@ export async function findUserForLoginByEmail(email) {
 
   return rows[0] ?? null;
 }
+
+export async function findUserById(id) {
+  const { rows } = await pool.query(
+    `SELECT id, email, name, phone, rating_average, created_at
+     FROM users
+     WHERE id = $1
+     LIMIT 1`,
+    [id],
+  );
+
+  return rows[0] ?? null;
+}
