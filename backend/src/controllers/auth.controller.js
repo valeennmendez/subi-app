@@ -1,5 +1,6 @@
 import { clearAuthCookie, setAuthCookie } from '../config/cookie.js';
 import { loginUser, registerUser } from '../services/auth.service.js';
+import { getCurrentUser } from '../services/me.service.js';
 
 export async function register(req, res) {
   const { user, token, expiresAt } = await registerUser(req.body);
@@ -21,4 +22,10 @@ export function logout(_req, res) {
   clearAuthCookie(res);
 
   return res.status(200).json({ message: 'Sesión cerrada correctamente' });
+}
+
+export async function me(req, res) {
+  const user = await getCurrentUser(req.user.id);
+
+  return res.status(200).json({ user });
 }

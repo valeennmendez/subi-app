@@ -1,12 +1,12 @@
 import { randomBytes } from 'node:crypto';
 import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
-import { env } from '../config/env.js';
 import { AppError } from '../errors/AppError.js';
 import {
   createUser,
   findUserForLoginByEmail,
 } from '../repositories/user.repository.js';
+import { toPublicUser } from '../utils/user.mapper.js';
+import { signToken } from './token.service.js';
 
 const BCRYPT_ROUNDS = 10;
 const DUPLICATE_EMAIL_CONSTRAINT = 'users_email_lower_unique';
@@ -17,34 +17,6 @@ const DUMMY_PASSWORD_HASH = bcrypt.hashSync(
   randomBytes(32).toString('hex'),
   BCRYPT_ROUNDS,
 );
-
-function toPublicUser(row) {
-  return {
-    id: row.id,
-    email: row.email,
-    name: row.name,
-    phone: row.phone,
-    rating_average:
-      row.rating_average === null ? null : Number(row.rating_average),
-    created_at: row.created_at,
-  };
-}
-
-function signToken(user) {
-  const token = jwt.sign(
-    { id: user.id, email: user.email },
-    env.jwtSecret,
-    {
-      algorithm: 'HS256',
-      expiresIn: env.jwtExpiresIn,
-    },
-  );
-
-  const { exp } = jwt.decode(token);
-
-  // exp viene en segundos; la cookie usa milisegundos.
-  return { token, expiresAt: exp * 1000 };
-}
 
 function isDuplicateEmailError(error) {
   return (
