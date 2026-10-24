@@ -6,12 +6,19 @@ import { requireAuth } from '../middlewares/auth.middleware.js';
 import { validate } from '../middlewares/validate.middleware.js';
 import { loginSchema, registerSchema } from '../validators/auth.validator.js';
 
+// En tests los límites se desactivan, salvo que el test de rate limit
+// pida explícitamente activarlos.
+const skipRateLimitInTests = () =>
+  process.env.NODE_ENV === 'test' &&
+  process.env.ENABLE_RATE_LIMIT_TEST === undefined;
+
 const loginLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   limit: 10,
   standardHeaders: true,
   legacyHeaders: false,
   skipSuccessfulRequests: true,
+  skip: skipRateLimitInTests,
   handler: (_req, _res, next) => {
     next(
       new AppError(
@@ -27,6 +34,7 @@ const registerLimiter = rateLimit({
   limit: 20,
   standardHeaders: true,
   legacyHeaders: false,
+  skip: skipRateLimitInTests,
   handler: (_req, _res, next) => {
     next(
       new AppError(
