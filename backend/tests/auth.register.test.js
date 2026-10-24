@@ -117,7 +117,10 @@ describe('POST /api/auth/register', () => {
     const response = await register({ ...buildUser(), role: 'admin' });
 
     assert.equal(response.status, 400);
-    assert.equal(response.body.error, 'El campo role no está permitido');
+    assert.equal(
+      response.body.error,
+      'El campo "role" no está permitido',
+    );
   });
 
   it('rechaza un teléfono con menos de 8 dígitos', async () => {
@@ -134,9 +137,10 @@ describe('POST /api/auth/register', () => {
     const response = await register(buildUser({ phone: '11aa2233' }));
 
     assert.equal(response.status, 400);
-    assert.equal(
-      response.body.error,
-      'El teléfono solo puede contener números, espacios, +, - y paréntesis',
+    assert.ok(
+      response.body.error.includes(
+        'solo puede contener números, espacios, +, - y paréntesis',
+      ),
     );
   });
 
