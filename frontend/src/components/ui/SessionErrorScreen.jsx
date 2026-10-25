@@ -13,7 +13,7 @@ export function SessionErrorScreen({ onRetry }) {
           No pudimos cargar tu sesión
         </h1>
         <p className="mt-3 text-base text-muted">
-          Revisá tu conexión e intentá de nuevo.
+          Intentá de nuevo en unos instantes.
         </p>
 
         <Button className="mt-8" onClick={onRetry}>

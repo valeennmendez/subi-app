@@ -6,7 +6,7 @@ export function AuthLayout({ title, subtitle, footer, children }) {
     <div className="relative min-h-dvh overflow-hidden bg-surface">
       <RouteBackdrop className="hidden min-[800px]:block" />
 
-      <main className="relative z-10 flex min-h-dvh items-center justify-center px-4 py-8 min-[800px]:px-10 min-[800px]:py-12">
+      <main className="relative z-10 flex min-h-dvh items-start justify-center px-4 py-8 min-[800px]:items-center min-[800px]:px-10 min-[800px]:py-12">
         <section className="w-full max-w-[480px] rounded-panel border border-line bg-canvas p-6 min-[800px]:p-10">
           <div className="flex justify-center">
             <Logo size="auth" />

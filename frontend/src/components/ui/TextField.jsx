@@ -31,7 +31,7 @@ export function TextField({
           id={fieldId}
           aria-invalid={hasError ? 'true' : undefined}
           aria-describedby={error || helpText ? messageId : undefined}
-          className={`h-[52px] w-full rounded-full border bg-surface text-base text-ink placeholder:text-muted focus:bg-canvas ${
+          className={`h-[52px] w-full rounded-full border bg-surface text-base text-ink placeholder:text-muted focus-visible:bg-canvas ${
             Icon ? 'pl-12' : 'pl-4'
           } ${trailing ? 'pr-14' : 'pr-4'} ${
             hasError ? 'border-error' : 'border-neutral'
