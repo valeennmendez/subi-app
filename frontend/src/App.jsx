@@ -1,4 +1,5 @@
 import { BrowserRouter, Link, Route, Routes } from 'react-router';
+import { AuthProvider } from './auth/AuthProvider.jsx';
 import { HomePage } from './pages/HomePage.jsx';
 
 function NotFoundPage() {
@@ -17,10 +18,12 @@ function NotFoundPage() {
 export default function App() {
   return (
     <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="*" element={<NotFoundPage />} />
-      </Routes>
+      <AuthProvider>
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="*" element={<NotFoundPage />} />
+        </Routes>
+      </AuthProvider>
     </BrowserRouter>
   );
 }
