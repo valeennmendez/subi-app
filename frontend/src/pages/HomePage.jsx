@@ -1,68 +1,86 @@
-import { useEffect, useState } from 'react';
-import { api, ApiError } from '../api/client.js';
+import { useAuth } from '../auth/AuthProvider.jsx';
+import { Header } from '../components/Header.jsx';
+import { LinkButton } from '../components/ui/LinkButton.jsx';
+import { LoadingScreen } from '../components/ui/LoadingScreen.jsx';
+import { SessionErrorScreen } from '../components/ui/SessionErrorScreen.jsx';
+import { getFirstName } from '../utils/user.js';
 
-const CARD_STYLES = {
-  loading: 'border-slate-200 bg-white text-slate-700',
-  ok: 'border-emerald-200 bg-emerald-50 text-emerald-800',
-  error: 'border-red-200 bg-red-50 text-red-800',
-};
-
-export function HomePage() {
-  const [health, setHealth] = useState({
-    status: 'loading',
-    message: 'Verificando conexión con el backend…',
-  });
-
-  useEffect(() => {
-    const controller = new AbortController();
-
-    api
-      .get('/health', { signal: controller.signal })
-      .then((data) => {
-        if (data?.status === 'ok') {
-          setHealth({ status: 'ok', message: 'Backend conectado' });
-          return;
-        }
-
-        setHealth({
-          status: 'error',
-          message: 'El backend respondió de forma inesperada',
-        });
-      })
-      .catch((error) => {
-        if (error.name === 'AbortError') return;
-
-        setHealth({
-          status: 'error',
-          message:
-            error instanceof ApiError ? error.message : 'Ocurrió un error inesperado',
-        });
-      });
-
-    return () => controller.abort();
-  }, []);
-
+function GuestHome() {
   return (
-    <main className="mx-auto flex min-h-dvh w-full max-w-md flex-col gap-6 px-4 py-8">
-      <header>
-        <h1 className="text-2xl font-semibold text-slate-900">Subi</h1>
-        <p className="mt-1 text-base text-slate-600">Base del frontend</p>
-      </header>
+    <section className="max-w-[640px]">
+      <h1 className="text-[32px] font-bold leading-[1.2] text-ink min-[800px]:text-[36px]">
+        Viajá compartiendo por toda la Argentina
+      </h1>
+      <p className="mt-3 text-base text-muted">
+        Sumate a la comunidad que comparte viajes de larga distancia en todo el
+        país.
+      </p>
 
-      <section
-        className={`rounded-lg border p-4 text-base ${CARD_STYLES[health.status]}`}
-      >
-        <p
-          role={health.status === 'error' ? 'alert' : 'status'}
-          className="font-medium"
+      <div className="mt-8 flex flex-col gap-3 min-[800px]:flex-row">
+        <LinkButton
+          to="/register"
+          className="w-full min-[800px]:w-auto"
         >
-          {health.message}
-        </p>
+          Crear cuenta
+        </LinkButton>
+        <LinkButton
+          to="/login"
+          variant="secondary"
+          className="w-full min-[800px]:w-auto"
+        >
+          Ingresar
+        </LinkButton>
+      </div>
+    </section>
+  );
+}
+
+function AuthenticatedHome({ user }) {
+  return (
+    <>
+      <section>
+        <h1 className="text-[36px] font-bold leading-[1.2] text-ink">
+          Hola, {getFirstName(user.name)}
+        </h1>
+        <p className="mt-2 text-base text-muted">¿A dónde viajás esta vez?</p>
       </section>
 
-      <p className="text-sm text-slate-500">
-        Verificación temporal del backend; se reemplaza en la próxima parte.
-      </p>
-    </main>
+      <section
+        aria-labelledby="home-coming-soon-title"
+        className="mt-10 max-w-[720px] rounded-card border border-line bg-canvas p-6"
+      >
+        <h2
+          id="home-coming-soon-title"
+          className="text-xl font-bold leading-[1.3] text-ink"
+        >
+          La búsqueda y reserva de viajes llega pronto
+        </h2>
+        <p className="mt-2 text-base text-muted">
+          Todavía no podés buscar ni reservar viajes desde Subi. Estamos
+          trabajando para habilitarlo en la próxima etapa.
+        </p>
+      </section>
+    </>
+  );
+}
+
+export function HomePage() {
+  const { status, user, retry } = useAuth();
+
+  if (status === 'loading') return <LoadingScreen />;
+  if (status === 'error') return <SessionErrorScreen onRetry={retry} />;
+
+  return (
+    <div className="min-h-dvh bg-canvas">
+      <Header />
+
+      <main className="mx-auto w-full max-w-[1120px] px-4 py-8 min-[800px]:px-10 min-[800px]:pt-12 min-[800px]:pb-16">
+        {status === 'authenticated' && user ? (
+          <AuthenticatedHome user={user} />
+        ) : (
+          <GuestHome />
+        )}
+      </main>
+    </div>
   );
 }

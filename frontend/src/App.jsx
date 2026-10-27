@@ -5,6 +5,7 @@ import { AccountPage } from './pages/AccountPage.jsx';
 import { HomePage } from './pages/HomePage.jsx';
 import { LoginPage } from './pages/LoginPage.jsx';
 import { NotFoundPage } from './pages/NotFoundPage.jsx';
+import { RegisterPage } from './pages/RegisterPage.jsx';
 
 export default function App() {
   return (
@@ -17,6 +18,14 @@ export default function App() {
             element={
               <GuestOnly>
                 <LoginPage />
+              </GuestOnly>
+            }
+          />
+          <Route
+            path="/register"
+            element={
+              <GuestOnly>
+                <RegisterPage />
               </GuestOnly>
             }
           />

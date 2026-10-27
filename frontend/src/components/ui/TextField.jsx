@@ -7,6 +7,7 @@ export function TextField({
   helpText,
   error,
   trailing,
+  inputRef,
   className = '',
   inputClassName = '',
   ...inputProps
@@ -29,6 +30,7 @@ export function TextField({
 
         <input
           id={fieldId}
+          ref={inputRef}
           aria-invalid={hasError ? 'true' : undefined}
           aria-describedby={error || helpText ? messageId : undefined}
           className={`h-[52px] w-full rounded-full border bg-surface text-base text-ink placeholder:text-muted focus-visible:bg-canvas ${
