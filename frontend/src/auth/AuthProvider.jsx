@@ -61,13 +61,24 @@ export function AuthProvider({ children }) {
     return data.user;
   }
 
+  async function register(userData) {
+    const data = await api.post('/auth/register', userData);
+
+    if (!data?.user) {
+      throw new ApiError('El servidor devolvió una respuesta inválida', 500);
+    }
+
+    setAuth({ status: 'authenticated', user: data.user });
+    return data.user;
+  }
+
   async function logout() {
     await api.post('/auth/logout');
     setAuth({ status: 'anonymous', user: null });
   }
 
   return (
-    <AuthContext.Provider value={{ ...auth, login, logout, retry }}>
+    <AuthContext.Provider value={{ ...auth, login, register, logout, retry }}>
       {children}
     </AuthContext.Provider>
   );
