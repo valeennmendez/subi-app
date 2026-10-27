@@ -36,6 +36,14 @@ export function LockIcon({ className = 'size-5', ...props }) {
   );
 }
 
+export function PhoneIcon({ className = 'size-5', ...props }) {
+  return (
+    <svg {...ICON_PROPS} className={className} {...props}>
+      <path d="M5 4h3l1.5 4-2 1.5a12 12 0 0 0 7 7l1.5-2 4 1.5v3a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2Z" />
+    </svg>
+  );
+}
+
 export function EyeIcon({ className = 'size-5', ...props }) {
   return (
     <svg {...ICON_PROPS} className={className} {...props}>
