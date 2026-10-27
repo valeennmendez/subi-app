@@ -248,3 +248,11 @@ El detalle de cada ítem del menú (vehículos, pagos, preferencias, etc.) vive 
 - Logo definitivo (el actual, un cuadrado verde con una "S", es provisional).
 - Datos de ejemplo (nombre, calificación, rutas, ciudades del dibujo) a reemplazar por datos reales.
 - Estados de error del servidor (credenciales inválidas, correo ya registrado).
+
+## 11. Desviaciones de implementación
+
+- **Teléfono en el registro.** Se agregó el campo **Teléfono** entre el correo y la contraseña porque el backend lo exige al crear la cuenta. Usa el mismo estilo que los demás campos, `type="tel"`, `inputMode="tel"` y una ayuda con el formato esperado (entre 8 y 20 dígitos).
+- **Casilla de edad.** El registro muestra una sola casilla con la declaración "Soy mayor de 18 años." Es obligatoria para enviar. La referencia a Términos y Política de privacidad se quitó porque esas páginas todavía no existen.
+- **Botón secundario.** Se agregó una variante no definida en esta guía: píldora de 52 px, fondo `canvas`, borde `line` de 1 px y texto `ink` en peso 700. Se usa en el inicio de visitante junto al botón primario, con un solo botón relleno por pantalla.
+- **Confirmación de contraseña.** Se valida en el cliente y no se envía al backend: el cuerpo del registro es solo `{ email, password, name, phone }`.
+- **Inicio.** Por ahora muestra el saludo y una tarjeta informativa. El buscador, "Tus próximos viajes" y "Rutas frecuentes" quedan fuera hasta que existan las funcionalidades de viajes y reservas.
