@@ -3,7 +3,9 @@ export const BUTTON_BASE =
 
 export const BUTTON_VARIANTS = {
   primary:
-    'min-h-[52px] w-full rounded-full bg-ink px-6 text-base font-bold text-canvas hover:bg-ink/90',
+    'min-h-[52px] rounded-full bg-ink px-6 text-base font-bold text-canvas hover:bg-ink/90',
+  secondary:
+    'min-h-[52px] rounded-full border border-line bg-canvas px-6 text-base font-bold text-ink hover:bg-surface',
   dangerAction:
     'min-h-11 rounded-full px-0 text-base font-semibold text-error hover:underline',
 };

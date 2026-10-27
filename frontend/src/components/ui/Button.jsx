@@ -7,11 +7,12 @@ export function Button({
   ...props
 }) {
   const styles = BUTTON_VARIANTS[variant] ?? BUTTON_VARIANTS.primary;
+  const width = variant === 'dangerAction' ? '' : 'w-full';
 
   return (
     <button
       type={type}
-      className={`${BUTTON_BASE} ${styles} ${className}`}
+      className={`${BUTTON_BASE} ${styles} ${width} ${className}`}
       {...props}
     />
   );
