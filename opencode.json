@@ -1,0 +1,59 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "share": "disabled",
+  "permission": {
+    "*": "ask",
+    "read": {
+      "*": "allow",
+      "*.env": "deny",
+      "*.env.*": "deny",
+      "*.env.example": "allow"
+    },
+    "edit": {
+      "*": "allow",
+      "*.env": "deny",
+      "*.env.*": "deny",
+      "*.env.example": "allow",
+      "opencode.json": "deny"
+    },
+    "external_directory": "deny",
+    "webfetch": "ask",
+    "bash": {
+      "*": "ask",
+      "git status": "allow",
+      "git status *": "allow",
+      "git diff": "allow",
+      "git diff *": "allow",
+      "git log *": "allow",
+      "git show *": "allow",
+      "git grep *": "allow",
+      "git add *": "ask",
+      "git commit *": "ask",
+      "git switch *": "ask",
+      "git checkout *": "ask",
+      "npm run build": "allow",
+      "npm view *": "allow",
+      "npm ls *": "allow",
+      "npm audit": "allow",
+      "npm install *": "ask",
+      "git push *": "deny",
+      "git reset *": "deny",
+      "git rebase *": "deny",
+      "git clean *": "deny",
+      "npm run dev*": "deny",
+      "npm start*": "deny",
+      "npm test*": "deny",
+      "npm run test*": "deny",
+      "rm *": "deny",
+      "Remove-Item *": "deny",
+      "del *": "deny",
+      "docker *": "deny",
+      "wsl *": "deny",
+      "psql *": "deny",
+      "curl *": "deny",
+      "wget *": "deny",
+      "Invoke-WebRequest *": "deny",
+      "*.env*": "deny"
+    }
+  }
+}
