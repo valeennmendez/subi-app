@@ -24,3 +24,15 @@ export async function createTrip({
 
   return rows[0];
 }
+
+export async function findTripsByDriverId(driverId) {
+  const { rows } = await pool.query(
+    `SELECT ${TRIP_COLUMNS}
+     FROM trips
+     WHERE driver_id = $1
+     ORDER BY departure_time DESC, id DESC`,
+    [driverId],
+  );
+
+  return rows;
+}

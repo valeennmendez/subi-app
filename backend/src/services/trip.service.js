@@ -1,5 +1,8 @@
 import { AppError } from '../errors/AppError.js';
-import { createTrip } from '../repositories/trip.repository.js';
+import {
+  createTrip,
+  findTripsByDriverId,
+} from '../repositories/trip.repository.js';
 import { toPublicTrip } from '../utils/trip.mapper.js';
 
 const FOREIGN_KEY_VIOLATION = '23503';
@@ -35,4 +38,10 @@ export async function createTripForDriver(driverId, tripData) {
 
     throw error;
   }
+}
+
+export async function listTripsForDriver(driverId) {
+  const tripRows = await findTripsByDriverId(driverId);
+
+  return tripRows.map(toPublicTrip);
 }
