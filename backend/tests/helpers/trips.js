@@ -7,6 +7,24 @@ export const VALID_TRIP = {
   price_per_seat: 1500,
 };
 
+const ONE_YEAR_MS = 365 * 24 * 60 * 60 * 1000;
+// Argentina está en UTC-3 todo el año (no tiene horario de verano).
+const ARGENTINA_OFFSET_MS = 3 * 60 * 60 * 1000;
+
+// Fecha de salida relativa a ahora: no depende del calendario del día que se
+// corran los tests. Devuelve el mismo instante expresado con offset -03:00.
+export function futureDepartureTime(msFromNow = ONE_YEAR_MS) {
+  const instant = new Date(Date.now() + msFromNow);
+  const local = new Date(instant.getTime() - ARGENTINA_OFFSET_MS);
+  const isoWithoutMillis = local.toISOString().replace(/\.\d{3}Z$/, '');
+
+  return `${isoWithoutMillis}-03:00`;
+}
+
 export function buildTrip(overrides = {}) {
   return { ...VALID_TRIP, ...overrides };
+}
+
+export function buildFutureTrip(overrides = {}) {
+  return buildTrip({ departure_time: futureDepartureTime(), ...overrides });
 }
