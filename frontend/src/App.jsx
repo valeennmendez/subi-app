@@ -5,6 +5,7 @@ import { AccountPage } from './pages/AccountPage.jsx';
 import { CreateTripPage } from './pages/CreateTripPage.jsx';
 import { HomePage } from './pages/HomePage.jsx';
 import { LoginPage } from './pages/LoginPage.jsx';
+import { MyTripsPage } from './pages/MyTripsPage.jsx';
 import { NotFoundPage } from './pages/NotFoundPage.jsx';
 import { RegisterPage } from './pages/RegisterPage.jsx';
 import { ToastProvider } from './toast/ToastProvider.jsx';
@@ -45,6 +46,14 @@ export default function App() {
               element={
                 <RequireAuth>
                   <CreateTripPage />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/viajes/mios"
+              element={
+                <RequireAuth>
+                  <MyTripsPage />
                 </RequireAuth>
               }
             />
