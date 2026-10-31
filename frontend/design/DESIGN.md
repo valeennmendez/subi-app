@@ -209,7 +209,7 @@ El estado siempre se comunica con texto, no solo con color.
 | Éxito | Listo | `brand-soft` y `brand-line` | Tilde oscuro sobre `brand` | `status` |
 | Error | Error | `error-soft` y `error-line` | Signo de exclamación blanco sobre `error` | `alert` |
 
-Aparece en la esquina superior derecha, bajo la barra superior (en pantallas angostas, a todo el ancho). Se cierra solo tras unos 5 segundos (valor propuesto) y se pausa mientras el usuario lo tiene con el cursor o el foco. Si hay más de uno, se apilan con 12 px de separación.
+Aparece en la esquina superior derecha, bajo la barra superior (en pantallas angostas, a todo el ancho). Se cierra solo a los 5 segundos y se pausa mientras el usuario lo tiene con el cursor o el foco. Si hay más de uno, se apilan con 12 px de separación.
 
 **Fila de viaje.** Tarjeta de 20 px de radio con cuatro bloques: ruta y fecha (flexible), asientos, precio por asiento e insignia de estado. Los bloques se separan 32 px. En pantallas angostas pasa a dos columnas. Todavía no lleva "Editar" ni "Cancelar"; esos controles irán a la derecha en una fase futura.
 
@@ -328,7 +328,7 @@ El toast de éxito aparece aquí después de publicar. En esta fase no hay edici
 
 - Diseño móvil de publicar viaje, mis viajes y el toast.
 - Edición y cancelación de viajes (fase futura), con sus estados `completed` y `cancelled`.
-- Confirmar el tiempo de cierre del toast (se propuso 5 segundos) y el tope de precio, que el diseño no fija.
+- Tope de precio: $5.000.000, definido en el backend y replicado en el frontend.
 - Diseño móvil con barra inferior de navegación (Inicio, Buscar, Viajes, Cuenta).
 - Pantalla de carga: logo centrado con indicador discreto o esqueletos, sin texto técnico.
 - Logo definitivo (el actual, un cuadrado verde con una "S", es provisional).
