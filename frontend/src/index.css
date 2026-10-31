@@ -14,12 +14,29 @@
   --color-brand-deep: #065f46;
   --color-road: #dce4f5;
   --color-error: #b42318;
+  --color-error-soft: #fef3f2;
+  --color-error-line: #fda29b;
+  --color-brand-line: #6ee7b7;
 
   --font-sans: "Plus Jakarta Sans Variable", "Plus Jakarta Sans", system-ui, sans-serif;
 
   --radius-field: 14px;
   --radius-card: 20px;
   --radius-panel: 28px;
+  --radius-toast: 16px;
+
+  --animate-toast-in: toast-in 160ms ease-out;
+
+  @keyframes toast-in {
+    from {
+      opacity: 0;
+      transform: translateY(-4px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
 }
 
 @layer base {
