@@ -3,7 +3,7 @@
 Subi es una app web de carpooling para viajes de larga distancia en Argentina.
 Stack: React + Tailwind CSS 4 (sin Shadcn).
 
-Esta guía cubre la etapa 1: **registro, login, inicio y mi cuenta**. Las próximas etapas (buscador de viajes, detalle, reservas y calificaciones) deben reutilizar estos mismos tokens y componentes.
+Esta guía cubre la etapa 1 (**registro, login, inicio y mi cuenta**) y la fase 3.2, el módulo de conductor (**publicar viaje, mis viajes y toast**). Las próximas etapas (buscador de viajes, detalle, reservas y calificaciones) deben reutilizar estos mismos tokens y componentes.
 
 ## 1. Principios
 
@@ -31,7 +31,10 @@ Paleta base: "Pampa Route Minimal" (Primary `#0F172A`, Secondary `#10B981`, Tert
 | `brand-soft` | `#D1FAE5` | Fondo de insignias "Verificada" y del ítem activo del menú de cuenta |
 | `brand-deep` | `#065F46` | Texto sobre `brand-soft` (insignias de verificación) |
 | `road` | `#DCE4F5` | Camino del dibujo decorativo de fondo |
-| `error` | `#B42318` | Mensajes de error, borde de campo con error, "Cerrar sesión" |
+| `error` | `#B42318` | Mensajes de error, borde de campo con error, "Cerrar sesión", texto del aviso general y de la insignia "Cancelado", ícono del toast de error |
+| `error-soft` | `#FEF3F2` | Fondo del aviso general de error, del toast de error y de la insignia "Cancelado" |
+| `error-line` | `#FDA29B` | Borde de esos mismos elementos |
+| `brand-line` | `#6EE7B7` | Borde del toast de éxito |
 
 ### Contrastes de referencia (aproximados)
 
@@ -43,6 +46,8 @@ Paleta base: "Pampa Route Minimal" (Primary `#0F172A`, Secondary `#10B981`, Tert
 | `brand-strong` sobre `canvas` | ≈ 5,5:1 | AA |
 | `brand-deep` sobre `brand-soft` | ≈ 6:1 | AA |
 | `error` sobre `canvas` | ≈ 6,5:1 | AA |
+| `error` sobre `error-soft` | ≈ 6:1 | AA |
+| `ink` sobre `brand-soft` y sobre `error-soft` | ≈ 15:1 | AAA (texto del toast) |
 | `ink` sobre `brand` | ≈ 7:1 | AA (texto oscuro sobre verde) |
 | `neutral` sobre `canvas` | ≈ 4,8:1 | AA, pero solo para íconos y bordes |
 
@@ -70,12 +75,17 @@ Reglas:
   --color-brand-deep: #065F46;
   --color-road: #DCE4F5;
   --color-error: #B42318;
+  --color-error-soft: #FEF3F2;
+  --color-error-line: #FDA29B;
+  --color-brand-line: #6EE7B7;
 
   --font-sans: "Plus Jakarta Sans", system-ui, sans-serif;
 
   --radius-field: 14px;
   --radius-card: 20px;
   --radius-panel: 28px;
+  --radius-alert: 14px;
+  --radius-toast: 16px;
 }
 ```
 
@@ -85,7 +95,7 @@ Reglas:
 
 | Rol | Tamaño / interlineado | Peso | Dónde se usa |
 |---|---|---|---|
-| Título de pantalla (inicio) | 36 px / 1,2 | 700 | "Hola, Martín" |
+| Título de página (inicio y módulo de conductor) | 36 px / 1,2 | 700 | "Hola, Martín", "Publicar viaje", "Mis viajes" |
 | Título de pantalla (cuenta) | 32 px / 1,2 | 700 | Nombre en mi cuenta |
 | Título de tarjeta de acceso | 28 px / 1,2 | 800 | "Creá tu cuenta", "Iniciá sesión" |
 | Logo (acceso) | 26 px | 800 | Wordmark "Subi" en login y registro |
@@ -116,6 +126,9 @@ Base de 4 px. Escala usada: 4, 6, 8, 12, 16, 18, 20, 24, 32, 40, 48, 64.
 | Margen horizontal de página (escritorio) | 40 px |
 | Margen vertical de página | 48 px arriba, 64 px abajo |
 | Separación entre columnas (menú y contenido de cuenta) | 48 px |
+| Grilla del formulario de publicar viaje (6 columnas) | 18 px. Origen y Destino ocupan 3 columnas cada uno; Fecha, Asientos y Precio, 2 cada uno |
+| Filas de viaje en "Mis viajes" | 16 px entre filas, 24 px de padding y 32 px entre columnas internas |
+| Toast | 16 px bajo la barra superior y 40 px del borde derecho de la página |
 
 Tamaños fijos:
 
@@ -129,6 +142,9 @@ Tamaños fijos:
 | Ancho máximo de la tarjeta de acceso | 480 px |
 | Ancho del menú lateral de cuenta | 240 px |
 | Avatar | 44 px (barra), 80 px (perfil) |
+| Ancho del toast | 400 px (100 % del ancho en pantallas angostas) |
+| Ícono de campo | 20 px, a 16 px del borde izquierdo |
+| Ícono del toast | círculo de 28 px |
 
 Punto de quiebre actual: **800 px**. Por debajo, las grillas pasan a una columna y los links de la barra superior se ocultan. El diseño móvil completo (barra inferior con Inicio, Buscar, Viajes y Cuenta) está pendiente de diseñar.
 
@@ -142,7 +158,9 @@ Punto de quiebre actual: **800 px**. Por debajo, las grillas pasan a una columna
 | Campos de búsqueda en inicio | 14 px |
 | Ítems del menú de cuenta | 10 px |
 | Logo (cuadrado con "S") | 10 px en barra, 12 px en acceso |
-| Insignias de verificación | 999 px |
+| Insignias (verificación y estado) | 999 px |
+| Aviso general de error | 14 px |
+| Toast | 16 px |
 | Avatar | 50 % |
 
 ## 6. Sombras y elevación
@@ -156,9 +174,13 @@ Si en etapas futuras hace falta elevación (menús desplegables, modales), usar 
 
 ## 7. Componentes
 
-**Botón primario.** Píldora de 52 px, fondo `ink`, texto blanco en peso 700, ancho completo en formularios. Es el único botón relleno de cada pantalla.
+**Botón primario.** Píldora de 52 px, fondo `ink`, texto blanco en peso 700, ancho completo en formularios. Es el único botón relleno de cada pantalla. Mientras se envía un formulario, el botón conserva su tamaño, cambia el texto a la acción en gerundio ("Publicando...") y queda deshabilitado.
 
 **Campo de texto.** Etiqueta de 14 px arriba, campo de 52 px con fondo `surface`, borde `line`, ícono a la izquierda en `neutral` (usuario, correo, candado), y botón de ojo de 44 px a la derecha en contraseñas. Foco: contorno de 2 px en `ink` y fondo blanco. Error: borde y texto `error`, con el mensaje debajo.
+
+**Íconos de campo.** Trazo de 2 px, 20 px, color `neutral`, a la izquierda del campo. Registro y login: usuario, correo y candado. Publicar viaje: origen (círculo con punto), destino (pin), fecha (calendario), asientos (personas) y precio (signo $ dentro de un círculo). Origen y destino usan íconos distintos para diferenciarlos de un vistazo.
+
+**Campo con ayuda y error.** Debajo del campo va primero el error (14 px, `error`) y después la ayuda (14 px, `muted`), si hay. La ayuda no se reemplaza por el error.
 
 **Casilla.** Control de 24 px con `brand-strong` al marcarse, dentro de una fila de al menos 44 px. Los links dentro del texto usan `brand-strong`.
 
@@ -168,7 +190,28 @@ Si en etapas futuras hace falta elevación (menús desplegables, modales), usar 
 
 **Fila de datos.** Altura mínima de 64 px, etiqueta secundaria de 14 px arriba, valor debajo, link "Editar" a la derecha y divisor `line` entre filas.
 
-**Insignia de verificación.** Píldora con fondo `brand-soft`, texto `brand-deep` de 14 px en peso 600.
+**Insignia de estado.** Píldora de 14 px en peso 600 con borde de 1 px. Se usa para verificaciones y para el estado de un viaje:
+
+| Estado | Etiqueta | Fondo | Texto | Borde |
+|---|---|---|---|---|
+| `scheduled` | Programado | `surface` | `ink` | `line` |
+| `completed` (y "Verificada") | Completado | `brand-soft` | `brand-deep` | `brand-soft` |
+| `cancelled` | Cancelado | `error-soft` | `error` | `error-line` |
+
+El estado siempre se comunica con texto, no solo con color.
+
+**Aviso general de error.** Va arriba del formulario cuando el error no corresponde a un campo (por ejemplo, el servidor rechazó el envío por otro motivo). Fondo `error-soft`, borde `error-line`, radio 14 px, padding 14 × 16 px, ícono de advertencia y texto de 14 px en peso 600 color `error`. Lleva `role="alert"` y 24 px de margen inferior.
+
+**Toast.** Notificación temporal para cualquier parte de la app, con dos variantes. Mide 400 px y tiene radio de 16 px, fondo tintado y borde fino, sin sombra. Lleva un ícono circular de 28 px, una etiqueta en 14 px y peso 700, el mensaje en 14 px y un botón de cerrar de 44 px a la derecha.
+
+| Variante | Etiqueta | Fondo y borde | Ícono | Rol |
+|---|---|---|---|---|
+| Éxito | Listo | `brand-soft` y `brand-line` | Tilde oscuro sobre `brand` | `status` |
+| Error | Error | `error-soft` y `error-line` | Signo de exclamación blanco sobre `error` | `alert` |
+
+Aparece en la esquina superior derecha, bajo la barra superior (en pantallas angostas, a todo el ancho). Se cierra solo tras unos 5 segundos (valor propuesto) y se pausa mientras el usuario lo tiene con el cursor o el foco. Si hay más de uno, se apilan con 12 px de separación.
+
+**Fila de viaje.** Tarjeta de 20 px de radio con cuatro bloques: ruta y fecha (flexible), asientos, precio por asiento e insignia de estado. Los bloques se separan 32 px. En pantallas angostas pasa a dos columnas. Todavía no lleva "Editar" ni "Cancelar"; esos controles irán a la derecha en una fase futura.
 
 **Barra superior.** 72 px, borde inferior `line`. Logo, links "Buscar viajes", "Publicar viaje" y "Mis viajes" (el activo en peso 700) y, a la derecha, el nombre y el avatar con iniciales.
 
@@ -233,26 +276,61 @@ Barra superior (sin ítem activo) y un contenedor de 1120 px con dos columnas: m
 
 El detalle de cada ítem del menú (vehículos, pagos, preferencias, etc.) vive en su propia pantalla y no se muestra todo junto. Las métricas de ahorro y CO₂ se postergan para una etapa posterior.
 
+### 8.5 Publicar viaje
+
+Página interna con la barra superior ("Publicar viaje" activo, en peso 700) y el contenedor de 1120 px. No lleva el dibujo de ruta ni la tarjeta centrada de login y registro.
+
+1. Título "Publicar viaje" y subtítulo "Contanos de dónde salís y a dónde vas."
+2. Tarjeta con el aviso general de error (solo cuando corresponde) y una grilla de cinco campos:
+
+| Campo | Control | Ícono | Reglas y mensajes |
+|---|---|---|---|
+| Origen | Texto, 120 caracteres máximo | Círculo con punto | Obligatorio |
+| Destino | Texto, 120 caracteres máximo | Pin | Obligatorio y distinto del origen: "El destino debe ser distinto del origen" |
+| Fecha y hora de salida | `datetime-local` nativo | Calendario | Obligatorio y futuro: "Elegí una fecha y hora futuras" |
+| Asientos disponibles | Numérico, de 1 a 8 | Personas | Entero de 1 a 8. Ayuda: "De 1 a 8 asientos" |
+| Precio por asiento | Numérico, en pesos | Signo $ | Entero positivo con tope: "El precio supera el máximo permitido". Ayuda: "Al reservar se cobra una seña del 15%." |
+
+3. Botón primario "Publicar viaje" de ancho completo.
+
+Comportamiento:
+- Errores en línea debajo de cada campo, con el mismo estilo del registro.
+- Sin pantalla de resumen: el formulario directo alcanza.
+- Si el envío tiene éxito, se redirige a "Mis viajes" y se muestra el toast de éxito "Tu viaje se publicó correctamente."
+- En pantallas angostas, los campos pasan a una sola columna.
+
+### 8.6 Mis viajes
+
+Página interna con la barra superior ("Mis viajes" activo) y el contenedor de 1120 px.
+
+1. Título "Mis viajes", subtítulo "Tus viajes publicados, del más próximo al más lejano." y, a la derecha, el botón primario "Publicar viaje".
+2. Lista de filas de viaje, ordenadas por fecha de salida de menor a mayor. Cada una muestra:
+   - ruta "Origen → Destino" (18 px, peso 600),
+   - fecha y hora en formato argentino, por ejemplo "domingo 8 de noviembre · 07:30 h" (armar con `Intl.DateTimeFormat("es-AR")`),
+   - asientos como "3 de 4 asientos",
+   - precio por asiento con separador de miles, por ejemplo "$12.000" (`Intl.NumberFormat("es-AR")`),
+   - insignia de estado.
+3. **Estado vacío:** tarjeta con "Todavía no publicaste viajes", "Cuando publiques uno, va a aparecer acá." y el link "Publicar un viaje".
+
+El toast de éxito aparece aquí después de publicar. En esta fase no hay edición ni cancelación.
+
 ## 9. Accesibilidad
 
 - Usar elementos nativos: `button`, `a`, `input` con `label`. No usar `div` con `onClick`.
 - Todo ícono sin texto lleva `aria-label` (por ejemplo el ojo de la contraseña). Los íconos decorativos y el dibujo de ruta llevan `aria-hidden="true"`.
 - Foco siempre visible: contorno de 2 px en `ink`.
 - Errores en texto, asociados al campo (`aria-describedby`) y con `aria-invalid` cuando corresponda.
+- Toast: `role="status"` para éxito y `role="alert"` para error. Se descarta con un botón de cerrar de 44 px que lleva `aria-label`, y no desaparece mientras tiene el foco. No depende del color: lleva ícono distinto y etiqueta ("Listo" o "Error").
+- Aviso general de error con `role="alert"`. Los errores de campo se asocian con `aria-describedby`, junto con su ayuda si la hay.
 - Respetar `prefers-reduced-motion` si se agregan animaciones.
 
 ## 10. Pendientes
 
+- Diseño móvil de publicar viaje, mis viajes y el toast.
+- Edición y cancelación de viajes (fase futura), con sus estados `completed` y `cancelled`.
+- Confirmar el tiempo de cierre del toast (se propuso 5 segundos) y el tope de precio, que el diseño no fija.
 - Diseño móvil con barra inferior de navegación (Inicio, Buscar, Viajes, Cuenta).
 - Pantalla de carga: logo centrado con indicador discreto o esqueletos, sin texto técnico.
 - Logo definitivo (el actual, un cuadrado verde con una "S", es provisional).
 - Datos de ejemplo (nombre, calificación, rutas, ciudades del dibujo) a reemplazar por datos reales.
 - Estados de error del servidor (credenciales inválidas, correo ya registrado).
-
-## 11. Desviaciones de implementación
-
-- **Teléfono en el registro.** Se agregó el campo **Teléfono** entre el correo y la contraseña porque el backend lo exige al crear la cuenta. Usa el mismo estilo que los demás campos, `type="tel"`, `inputMode="tel"` y una ayuda con el formato esperado (entre 8 y 20 dígitos).
-- **Casilla de edad.** El registro muestra una sola casilla con la declaración "Soy mayor de 18 años." Es obligatoria para enviar. La referencia a Términos y Política de privacidad se quitó porque esas páginas todavía no existen.
-- **Botón secundario.** Se agregó una variante no definida en esta guía: píldora de 52 px, fondo `canvas`, borde `line` de 1 px y texto `ink` en peso 700. Se usa en el inicio de visitante junto al botón primario, con un solo botón relleno por pantalla.
-- **Confirmación de contraseña.** Se valida en el cliente y no se envía al backend: el cuerpo del registro es solo `{ email, password, name, phone }`.
-- **Inicio.** Por ahora muestra el saludo y una tarjeta informativa. El buscador, "Tus próximos viajes" y "Rutas frecuentes" quedan fuera hasta que existan las funcionalidades de viajes y reservas.
