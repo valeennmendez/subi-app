@@ -1,9 +1,19 @@
 import { COOKIE_NAME } from '../config/cookie.js';
 import { AppError } from '../errors/AppError.js';
 import { verifyToken } from '../services/token.service.js';
+import { isUuid } from '../utils/uuid.js';
 
-const UUID_PATTERN =
-  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+function userFromToken(token) {
+  const payload = verifyToken(token);
+
+  // users.id es UUID: un id con otro formato haría fallar la consulta en
+  // Postgres con 22P02, que terminaría en un 500.
+  if (!isUuid(payload?.id)) {
+    throw new Error('Token sin un id válido');
+  }
+
+  return { id: payload.id, email: payload.email };
+}
 
 export function requireAuth(req, _res, next) {
   const token = req.cookies?.[COOKIE_NAME];
@@ -12,10 +22,10 @@ export function requireAuth(req, _res, next) {
     return next(new AppError(401, 'No autenticado'));
   }
 
-  let payload;
+  let user;
 
   try {
-    payload = verifyToken(token);
+    user = userFromToken(token);
   } catch (error) {
     // jwt.verify lanza TokenExpiredError con name y clase propios.
     if (error.name === 'TokenExpiredError') {
@@ -25,13 +35,25 @@ export function requireAuth(req, _res, next) {
     return next(new AppError(401, 'No autenticado'));
   }
 
-  // users.id es UUID: un id con otro formato haría fallar la consulta en
-  // Postgres con 22P02, que terminaría en un 500.
-  if (typeof payload?.id !== 'string' || !UUID_PATTERN.test(payload.id)) {
-    return next(new AppError(401, 'No autenticado'));
+  req.user = user;
+
+  return next();
+}
+
+// En rutas públicas: si hay una sesión válida deja req.user; si no hay cookie
+// o el token no sirve, sigue como visitante.
+export function optionalAuth(req, _res, next) {
+  const token = req.cookies?.[COOKIE_NAME];
+
+  if (!token) {
+    return next();
   }
 
-  req.user = { id: payload.id, email: payload.email };
+  try {
+    req.user = userFromToken(token);
+  } catch {
+    // Un token inválido o vencido no bloquea una ruta pública.
+  }
 
   return next();
 }

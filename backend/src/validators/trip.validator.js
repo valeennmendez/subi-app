@@ -167,3 +167,76 @@ export const createTripSchema = Joi.object({
     'object.unknown': 'El campo {{#label}} no está permitido',
     'any.sameCity': 'El origen y el destino no pueden ser iguales',
   });
+
+const SEARCH_DATE_PATTERN = /^(\d{4})-(\d{2})-(\d{2})$/;
+
+function validateSearchDate(value, helpers) {
+  const match = SEARCH_DATE_PATTERN.exec(value);
+
+  if (!match) {
+    return helpers.error('searchDate.format');
+  }
+
+  const [, year, month, day] = match;
+  const parts = {
+    year: Number(year),
+    month: Number(month),
+    day: Number(day),
+  };
+
+  const asUtc = new Date(Date.UTC(parts.year, parts.month - 1, parts.day));
+
+  const isRealDate =
+    asUtc.getUTCFullYear() === parts.year &&
+    asUtc.getUTCMonth() === parts.month - 1 &&
+    asUtc.getUTCDate() === parts.day;
+
+  if (!isRealDate) {
+    return helpers.error('searchDate.invalid');
+  }
+
+  return value;
+}
+
+function searchCitySchema(fieldName) {
+  return Joi.string()
+    .strict()
+    .custom(collapseSpaces)
+    .min(1)
+    .max(CITY_MAX_LENGTH)
+    .optional()
+    .messages({
+      'string.base': `${fieldName} debe ser texto`,
+      'string.empty': `${fieldName} no puede estar vacío`,
+      'string.min': `${fieldName} no puede estar vacío`,
+      'string.max': `${fieldName} no puede superar los ${CITY_MAX_LENGTH} caracteres`,
+    });
+}
+
+export const searchTripsQuerySchema = Joi.object({
+  origin: searchCitySchema('El origen'),
+  destination: searchCitySchema('El destino'),
+  date: Joi.string()
+    .strict()
+    .custom(validateSearchDate)
+    .optional()
+    .messages({
+      'string.base': 'La fecha debe ser texto',
+      'string.empty': 'La fecha no puede estar vacía',
+      'searchDate.format': 'La fecha debe tener el formato YYYY-MM-DD',
+      'searchDate.invalid': 'La fecha no es válida',
+    }),
+  seats: Joi.number()
+    .integer()
+    .min(MIN_SEATS)
+    .default(1)
+    .messages({
+      'number.base': 'La cantidad de asientos debe ser un número entero',
+      'number.integer': 'La cantidad de asientos debe ser un número entero',
+      'number.min': `Debe haber al menos ${MIN_SEATS} asiento`,
+    }),
+})
+  .unknown(false)
+  .messages({
+    'object.unknown': 'El parámetro {{#label}} no está permitido',
+  });
