@@ -2,9 +2,11 @@ import { AppError } from '../errors/AppError.js';
 import {
   createTrip,
   findScheduledTrips,
+  findTripByIdWithDriver,
   findTripsByDriverId,
 } from '../repositories/trip.repository.js';
-import { toPublicTrip } from '../utils/trip.mapper.js';
+import { toPublicTrip, toPublicTripDetail } from '../utils/trip.mapper.js';
+import { isUuid } from '../utils/uuid.js';
 
 const FOREIGN_KEY_VIOLATION = '23503';
 const DRIVER_FK_CONSTRAINT = 'trips_driver_id_fkey';
@@ -97,4 +99,18 @@ export async function searchAvailableTrips({
   });
 
   return tripRows.map(toPublicTrip);
+}
+
+export async function getTripDetail(id) {
+  if (!isUuid(id)) {
+    throw new AppError(404, 'Viaje no encontrado');
+  }
+
+  const tripRow = await findTripByIdWithDriver(id);
+
+  if (!tripRow) {
+    throw new AppError(404, 'Viaje no encontrado');
+  }
+
+  return toPublicTripDetail(tripRow);
 }

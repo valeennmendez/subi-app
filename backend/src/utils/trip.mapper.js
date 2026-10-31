@@ -14,3 +14,10 @@ export function toPublicTrip(row) {
     created_at: row.created_at,
   };
 }
+
+export function toPublicTripDetail(row) {
+  return {
+    ...toPublicTrip(row),
+    driver_name: row.driver_name,
+  };
+}

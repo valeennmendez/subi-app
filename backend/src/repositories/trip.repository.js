@@ -95,3 +95,16 @@ export async function findScheduledTrips({
 
   return rows;
 }
+
+export async function findTripByIdWithDriver(id) {
+  const { rows } = await pool.query(
+    `SELECT ${selectTripColumns('t.')}, u.name AS driver_name
+     FROM trips t
+     JOIN users u ON u.id = t.driver_id
+     WHERE t.id = $1
+     LIMIT 1`,
+    [id],
+  );
+
+  return rows[0] ?? null;
+}

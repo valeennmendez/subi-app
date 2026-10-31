@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import {
   createTrip,
+  getTrip,
   listMyTrips,
   searchTrips,
 } from '../controllers/trip.controller.js';
@@ -23,5 +24,7 @@ tripsRouter.get(
   validateQuery(searchTripsQuerySchema),
   searchTrips,
 );
+
+tripsRouter.get('/:id', optionalAuth, getTrip);
 
 tripsRouter.post('/', requireAuth, validate(createTripSchema), createTrip);
