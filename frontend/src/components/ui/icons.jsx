@@ -44,6 +44,32 @@ export function PhoneIcon({ className = 'size-5', ...props }) {
   );
 }
 
+export function CheckIcon({ className = 'size-5', ...props }) {
+  return (
+    <svg {...ICON_PROPS} className={className} {...props}>
+      <path d="m5 12.5 4.5 4.5L19 7" />
+    </svg>
+  );
+}
+
+export function AlertIcon({ className = 'size-5', ...props }) {
+  return (
+    <svg {...ICON_PROPS} className={className} {...props}>
+      <path d="M12 6.5v7" />
+      <path d="M12 17.5h.01" />
+    </svg>
+  );
+}
+
+export function CloseIcon({ className = 'size-5', ...props }) {
+  return (
+    <svg {...ICON_PROPS} className={className} {...props}>
+      <path d="m6 6 12 12" />
+      <path d="M18 6 6 18" />
+    </svg>
+  );
+}
+
 export function EyeIcon({ className = 'size-5', ...props }) {
   return (
     <svg {...ICON_PROPS} className={className} {...props}>
