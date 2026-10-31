@@ -14,8 +14,15 @@ export function TextField({
 }) {
   const generatedId = useId();
   const fieldId = id ?? generatedId;
-  const messageId = `${fieldId}-message`;
+  const errorId = `${fieldId}-error`;
+  const helpId = `${fieldId}-help`;
   const hasError = Boolean(error);
+  const describedBy = [
+    hasError ? errorId : null,
+    helpText ? helpId : null,
+  ]
+    .filter(Boolean)
+    .join(' ');
 
   return (
     <div className={`flex flex-col gap-1.5 ${className}`}>
@@ -32,7 +39,7 @@ export function TextField({
           id={fieldId}
           ref={inputRef}
           aria-invalid={hasError ? 'true' : undefined}
-          aria-describedby={error || helpText ? messageId : undefined}
+          aria-describedby={describedBy || undefined}
           className={`h-[52px] w-full rounded-full border bg-surface text-base text-ink placeholder:text-muted focus-visible:bg-canvas ${
             Icon ? 'pl-12' : 'pl-4'
           } ${trailing ? 'pr-14' : 'pr-4'} ${
@@ -49,11 +56,13 @@ export function TextField({
       </div>
 
       {hasError ? (
-        <p id={messageId} role="alert" className="text-sm text-error">
+        <p id={errorId} role="alert" className="text-sm text-error">
           {error}
         </p>
-      ) : helpText ? (
-        <p id={messageId} className="text-sm text-muted">
+      ) : null}
+
+      {helpText ? (
+        <p id={helpId} className="text-sm text-muted">
           {helpText}
         </p>
       ) : null}

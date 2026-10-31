@@ -23,6 +23,7 @@
   --radius-field: 14px;
   --radius-card: 20px;
   --radius-panel: 28px;
+  --radius-alert: 14px;
   --radius-toast: 16px;
 
   --animate-toast-in: toast-in 160ms ease-out;
