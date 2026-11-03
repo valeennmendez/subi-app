@@ -1,18 +1,20 @@
-import { Link, NavLink } from 'react-router';
+import { Link, NavLink, useLocation } from 'react-router';
 import { useAuth } from '../auth/AuthProvider.jsx';
 import { getFirstName, getInitials } from '../utils/user.js';
 import { Avatar } from './ui/Avatar.jsx';
 import { Logo } from './ui/Logo.jsx';
 
-function HeaderLink({ to, children }) {
+function HeaderLink({ to, active, children }) {
   return (
     <NavLink
       to={to}
-      className={({ isActive }) =>
-        `inline-flex min-h-11 items-center text-base text-ink hover:underline ${
-          isActive ? 'font-bold' : 'font-medium'
-        }`
-      }
+      className={({ isActive }) => {
+        const highlighted = active ?? isActive;
+
+        return `inline-flex min-h-11 items-center text-base text-ink hover:underline ${
+          highlighted ? 'font-bold' : 'font-medium'
+        }`;
+      }}
     >
       {children}
     </NavLink>
@@ -21,6 +23,11 @@ function HeaderLink({ to, children }) {
 
 export function Header() {
   const { status, user } = useAuth();
+  const { pathname } = useLocation();
+  // El detalle (/viajes/:id) pertenece a la sección de búsqueda.
+  const isSearchSection =
+    pathname === '/viajes/buscar' ||
+    /^\/viajes\/(?!buscar$|nuevo$|mios$)[^/]+$/.test(pathname);
 
   return (
     <header className="h-[72px] border-b border-line bg-canvas">
@@ -39,6 +46,9 @@ export function Header() {
               aria-label="Viajes"
               className="hidden items-center gap-6 min-[800px]:flex"
             >
+              <HeaderLink to="/viajes/buscar" active={isSearchSection}>
+                Buscar viajes
+              </HeaderLink>
               <HeaderLink to="/viajes/nuevo">Publicar viaje</HeaderLink>
               <HeaderLink to="/viajes/mios">Mis viajes</HeaderLink>
             </nav>

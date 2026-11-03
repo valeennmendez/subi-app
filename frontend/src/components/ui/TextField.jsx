@@ -7,6 +7,7 @@ export function TextField({
   helpText,
   error,
   trailing,
+  shape = 'pill',
   inputRef,
   className = '',
   inputClassName = '',
@@ -17,6 +18,7 @@ export function TextField({
   const errorId = `${fieldId}-error`;
   const helpId = `${fieldId}-help`;
   const hasError = Boolean(error);
+  const radius = shape === 'field' ? 'rounded-field' : 'rounded-full';
   const describedBy = [
     hasError ? errorId : null,
     helpText ? helpId : null,
@@ -40,7 +42,7 @@ export function TextField({
           ref={inputRef}
           aria-invalid={hasError ? 'true' : undefined}
           aria-describedby={describedBy || undefined}
-          className={`h-[52px] w-full rounded-full border bg-surface text-base text-ink placeholder:text-muted focus-visible:bg-canvas ${
+          className={`h-[52px] w-full ${radius} border bg-surface text-base text-ink placeholder:text-muted focus-visible:bg-canvas ${
             Icon ? 'pl-12' : 'pl-4'
           } ${trailing ? 'pr-14' : 'pr-4'} ${
             hasError ? 'border-error' : 'border-neutral'

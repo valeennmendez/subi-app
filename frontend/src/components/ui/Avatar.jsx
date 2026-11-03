@@ -1,5 +1,6 @@
 const SIZES = {
   sm: 'size-11 text-base',
+  md: 'size-14 text-lg',
   lg: 'size-20 text-2xl',
 };
 

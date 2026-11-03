@@ -139,3 +139,11 @@ export function PriceIcon({ className = 'size-5', ...props }) {
     </svg>
   );
 }
+
+export function ChevronRightIcon({ className = 'size-5', ...props }) {
+  return (
+    <svg {...ICON_PROPS} className={className} {...props}>
+      <path d="m9 6 6 6-6 6" />
+    </svg>
+  );
+}
