@@ -8,6 +8,7 @@ import { LoginPage } from './pages/LoginPage.jsx';
 import { MyTripsPage } from './pages/MyTripsPage.jsx';
 import { NotFoundPage } from './pages/NotFoundPage.jsx';
 import { RegisterPage } from './pages/RegisterPage.jsx';
+import { SearchTripsPage } from './pages/SearchTripsPage.jsx';
 import { ToastProvider } from './toast/ToastProvider.jsx';
 
 export default function App() {
@@ -41,6 +42,7 @@ export default function App() {
                 </RequireAuth>
               }
             />
+            <Route path="/viajes/buscar" element={<SearchTripsPage />} />
             <Route
               path="/viajes/nuevo"
               element={
