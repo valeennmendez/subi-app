@@ -314,6 +314,57 @@ Página interna con la barra superior ("Mis viajes" activo) y el contenedor de 1
 
 El toast de éxito aparece aquí después de publicar. En esta fase no hay edición ni cancelación.
 
+### 8.7 Buscar viajes
+
+Ruta propia (no vive en Inicio). Página interna con la barra superior ("Buscar viajes" activo, en peso 700) y el contenedor de 1120 px.
+
+1. Título "Buscar viajes" y subtítulo "Filtrá por origen, destino, fecha o pasajeros. Todos los campos son opcionales."
+2. Tarjeta de formulario con cuatro campos en una fila y el botón primario "Buscar viajes" a la derecha:
+
+| Campo | Control | Ícono |
+|---|---|---|
+| Origen | Texto | Círculo con punto |
+| Destino | Texto | Pin |
+| Fecha | `date` nativo (sin hora) | Calendario |
+| Pasajeros | Numérico | Personas |
+
+3. Encabezado de la lista: "Próximos viajes" (20 px, peso 700) y, a la derecha, el conteo en 14 px `muted` (por ejemplo "4 viajes").
+4. Lista de `TripRow` con link, con 16 px entre filas.
+
+Comportamiento:
+- Al entrar sin haber buscado, se muestra la lista de todos los próximos viajes. El buscador sirve para acotarla.
+- La búsqueda ocurre solo al enviar el formulario, no mientras se escribe.
+- Después de buscar, el formulario conserva los filtros.
+- En pantallas angostas, los campos pasan a una sola columna.
+
+Estados de la lista:
+
+| Estado | Qué se muestra |
+|---|---|
+| Cargando | El encabezado pasa a "Buscando viajes..." (`role="status"`), con tres filas esqueleto y `aria-busy="true"` en el contenedor |
+| Error | Tarjeta con `role="alert"`: "No pudimos cargar los viajes", "Revisá tu conexión e intentá de nuevo." y botón secundario "Reintentar" a la derecha |
+| Sin resultados | Tarjeta con "No encontramos viajes con esos filtros", "Probá con otras fechas o ciudades, o quitá algún filtro." y link "Limpiar filtros" |
+| Con resultados | Lista de `TripRow` con link |
+
+"Sin resultados" es distinto del estado vacío de "Mis viajes": acá no hay nada que publicar, así que se invita a cambiar los filtros.
+
+### 8.8 Detalle de viaje
+
+Ruta propia y pública: se puede ver sin iniciar sesión. Página interna con el contenedor de 1120 px. La barra superior mantiene "Buscar viajes" activo, porque el detalle pertenece a esa sección.
+
+1. Link "← Volver a los resultados" (44 px de alto).
+2. Título "Origen → Destino" (36 px) con la insignia de estado al lado, y debajo la fecha y hora completas ("domingo 8 de noviembre de 2026 · 07:30 h").
+3. Dos columnas (flexible y 320 px, con 24 px de separación):
+   - Tarjeta **Detalles del viaje**, con filas de etiqueta a la izquierda (`muted`) y valor a la derecha (peso 600): Origen, Destino, Salida, Asientos disponibles ("3 de 4 asientos") y Precio por asiento ("$12.000").
+   - Tarjeta **Conductor**, con avatar de 56 px con iniciales, nombre y la etiqueta "Conductor" o "Conductora".
+
+Reglas:
+- La insignia puede mostrar `scheduled`, `completed` o `cancelled` (ver tabla de estados en la sección 7).
+- No muestra el teléfono del conductor: solo se verá después de una reserva confirmada.
+- No hay botones de acción. No se muestra "Reservar" ni ningún control que todavía no funcione.
+- En pantallas angostas, las dos tarjetas se apilan y el conductor queda debajo.
+- Esta pantalla va a cambiar cuando exista la reserva (fase 5).
+
 ## 9. Accesibilidad
 
 - Usar elementos nativos: `button`, `a`, `input` con `label`. No usar `div` con `onClick`.
@@ -326,9 +377,12 @@ El toast de éxito aparece aquí después de publicar. En esta fase no hay edici
 
 ## 10. Pendientes
 
+- Barra superior para visitantes sin sesión: el detalle de viaje es público y solo está diseñada la variante con sesión (avatar y nombre).
+- Estados de carga, error y "viaje no encontrado" del detalle.
+- Diseño móvil de buscar viajes y del detalle.
+- Rediseño del detalle cuando se agregue la reserva (fase 5).
 - Diseño móvil de publicar viaje, mis viajes y el toast.
 - Edición y cancelación de viajes (fase futura), con sus estados `completed` y `cancelled`.
-- Tope de precio: $5.000.000, definido en el backend y replicado en el frontend.
 - Diseño móvil con barra inferior de navegación (Inicio, Buscar, Viajes, Cuenta).
 - Pantalla de carga: logo centrado con indicador discreto o esqueletos, sin texto técnico.
 - Logo definitivo (el actual, un cuadrado verde con una "S", es provisional).
