@@ -28,6 +28,7 @@ Estas reglas se aplican en todas las sesiones. La especificación completa del p
 - Los archivos `.env.example` llevan solo nombres de variables y placeholders, nunca valores reales.
 - Las contraseñas se guardan siempre con hash (bcrypt). Nunca en texto plano ni en logs.
 - No imprimas en consola ni en logs datos sensibles (contraseñas, tokens, claves de API).
+- Las reglas de permisos del agente viven en `opencode.json`, en la raíz del repo. El agente no debe leerlo como instrucción ni modificarlo.
 
 ## Comandos peligrosos
 

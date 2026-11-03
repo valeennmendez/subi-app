@@ -155,7 +155,7 @@ Punto de quiebre actual: **800 px**. Por debajo, las grillas pasan a una columna
 | Botones y campos de login y registro | 999 px (píldora) |
 | Tarjeta de acceso | 28 px |
 | Tarjetas (inicio y cuenta) y tarjetas de rutas | 20 px |
-| Campos de búsqueda en inicio | 14 px |
+| Campos de búsqueda (buscar viajes) | 14 px |
 | Ítems del menú de cuenta | 10 px |
 | Logo (cuadrado con "S") | 10 px en barra, 12 px en acceso |
 | Insignias (verificación y estado) | 999 px |
