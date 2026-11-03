@@ -7,6 +7,14 @@ const DATE_FORMATTER = new Intl.DateTimeFormat('es-AR', {
   timeZone: ARGENTINA_TIME_ZONE,
 });
 
+const LONG_DATE_FORMATTER = new Intl.DateTimeFormat('es-AR', {
+  weekday: 'long',
+  day: 'numeric',
+  month: 'long',
+  year: 'numeric',
+  timeZone: ARGENTINA_TIME_ZONE,
+});
+
 const TIME_FORMATTER = new Intl.DateTimeFormat('es-AR', {
   hour: '2-digit',
   minute: '2-digit',
@@ -25,6 +33,17 @@ export function formatTripDate(value) {
   if (Number.isNaN(date.getTime())) return '';
 
   const dayAndMonth = DATE_FORMATTER.format(date).replace(/,/g, '');
+
+  return `${dayAndMonth} · ${TIME_FORMATTER.format(date)} h`;
+}
+
+// Formato del detalle: "domingo 8 de noviembre de 2026 · 07:30 h".
+export function formatTripDateLong(value) {
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) return '';
+
+  const dayAndMonth = LONG_DATE_FORMATTER.format(date).replace(/,/g, '');
 
   return `${dayAndMonth} · ${TIME_FORMATTER.format(date)} h`;
 }

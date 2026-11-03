@@ -9,6 +9,7 @@ import { MyTripsPage } from './pages/MyTripsPage.jsx';
 import { NotFoundPage } from './pages/NotFoundPage.jsx';
 import { RegisterPage } from './pages/RegisterPage.jsx';
 import { SearchTripsPage } from './pages/SearchTripsPage.jsx';
+import { TripDetailPage } from './pages/TripDetailPage.jsx';
 import { ToastProvider } from './toast/ToastProvider.jsx';
 
 export default function App() {
@@ -59,6 +60,7 @@ export default function App() {
                 </RequireAuth>
               }
             />
+            <Route path="/viajes/:id" element={<TripDetailPage />} />
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </AuthProvider>
