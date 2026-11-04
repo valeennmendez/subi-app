@@ -6,7 +6,9 @@ import { app } from '../src/app.js';
 import { buildUser, newAgent } from './helpers/auth.js';
 import { closePool, truncateUsers } from './helpers/db.js';
 import { NONEXISTENT_USER_ID, signTestToken } from './helpers/tokens.js';
-import { buildTrip } from './helpers/trips.js';
+import { buildFutureTrip, futureDepartureTime } from './helpers/trips.js';
+
+const DAY_MS = 24 * 60 * 60 * 1000;
 
 async function registerAgent(email) {
   const agent = newAgent();
@@ -20,7 +22,7 @@ async function registerAgent(email) {
 }
 
 async function createTripAs(agent, overrides) {
-  const response = await agent.post('/api/trips').send(buildTrip(overrides));
+  const response = await agent.post('/api/trips').send(buildFutureTrip(overrides));
 
   assert.equal(response.status, 201);
 
@@ -70,15 +72,15 @@ describe('GET /api/trips/mine', () => {
 
     await createTripAs(agent, {
       origin_city: 'Enero',
-      departure_time: '2030-01-01T10:00:00Z',
+      departure_time: futureDepartureTime(DAY_MS),
     });
     await createTripAs(agent, {
       origin_city: 'Marzo',
-      departure_time: '2030-03-01T10:00:00Z',
+      departure_time: futureDepartureTime(3 * DAY_MS),
     });
     await createTripAs(agent, {
       origin_city: 'Febrero',
-      departure_time: '2030-02-01T10:00:00Z',
+      departure_time: futureDepartureTime(2 * DAY_MS),
     });
 
     const response = await agent.get('/api/trips/mine');
@@ -92,14 +94,15 @@ describe('GET /api/trips/mine', () => {
 
   it('desempata por id descendente cuando la fecha coincide', async () => {
     const { agent } = await registerAgent('qa.test.mine.tie@example.com');
+    const departureTime = futureDepartureTime(DAY_MS);
 
     const firstTrip = await createTripAs(agent, {
       origin_city: 'Primero',
-      departure_time: '2030-05-01T10:00:00Z',
+      departure_time: departureTime,
     });
     const secondTrip = await createTripAs(agent, {
       origin_city: 'Segundo',
-      departure_time: '2030-05-01T10:00:00Z',
+      departure_time: departureTime,
     });
 
     const response = await agent.get('/api/trips/mine');

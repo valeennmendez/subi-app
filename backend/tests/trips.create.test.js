@@ -6,7 +6,9 @@ import { app } from '../src/app.js';
 import { buildUser, newAgent } from './helpers/auth.js';
 import { closePool, truncateUsers } from './helpers/db.js';
 import { NONEXISTENT_USER_ID, signTestToken } from './helpers/tokens.js';
-import { buildTrip } from './helpers/trips.js';
+import { buildFutureTrip, futureDepartureTime } from './helpers/trips.js';
+
+const DAY_MS = 24 * 60 * 60 * 1000;
 
 async function registerAgent(email) {
   const agent = newAgent();
@@ -26,7 +28,7 @@ describe('POST /api/trips', () => {
   it('crea el viaje del usuario autenticado y responde 201', async () => {
     const { agent, user } = await registerAgent('qa.test.trips.create@example.com');
 
-    const response = await agent.post('/api/trips').send(buildTrip());
+    const response = await agent.post('/api/trips').send(buildFutureTrip());
 
     assert.equal(response.status, 201);
     assert.deepEqual(Object.keys(response.body), ['trip']);
@@ -48,7 +50,7 @@ describe('POST /api/trips', () => {
 
     const response = await agent
       .post('/api/trips')
-      .send(buildTrip({ price_per_seat: 1500 }));
+      .send(buildFutureTrip({ price_per_seat: 1500 }));
 
     assert.equal(response.status, 201);
     assert.equal(typeof response.body.trip.price_per_seat, 'string');
@@ -57,36 +59,45 @@ describe('POST /api/trips', () => {
 
   it('guarda un horario con -03:00 como el mismo instante', async () => {
     const { agent } = await registerAgent('qa.test.trips.offset@example.com');
-    const departureTime = '2030-01-01T10:00:00-03:00';
+    const departureTime = futureDepartureTime();
 
     const response = await agent
       .post('/api/trips')
-      .send(buildTrip({ departure_time: departureTime }));
+      .send(buildFutureTrip({ departure_time: departureTime }));
 
     assert.equal(response.status, 201);
     assert.equal(
       new Date(response.body.trip.departure_time).getTime(),
       Date.parse(departureTime),
     );
-    assert.equal(response.body.trip.departure_time, '2030-01-01T13:00:00.000Z');
+    assert.equal(
+      response.body.trip.departure_time,
+      new Date(departureTime).toISOString(),
+    );
   });
 
   it('acepta una fecha con Z y horas sin segundos', async () => {
     const { agent } = await registerAgent('qa.test.trips.z@example.com');
+    const departureTime = futureDepartureTime()
+      .replace(/-03:00$/, 'Z')
+      .replace(/:\d{2}Z$/, 'Z');
 
     const response = await agent
       .post('/api/trips')
-      .send(buildTrip({ departure_time: '2031-06-15T09:30Z' }));
+      .send(buildFutureTrip({ departure_time: departureTime }));
 
     assert.equal(response.status, 201);
-    assert.equal(response.body.trip.departure_time, '2031-06-15T09:30:00.000Z');
+    assert.equal(
+      response.body.trip.departure_time,
+      new Date(departureTime).toISOString(),
+    );
   });
 
   it('recorta y colapsa los espacios de las ciudades', async () => {
     const { agent } = await registerAgent('qa.test.trips.spaces@example.com');
 
     const response = await agent.post('/api/trips').send(
-      buildTrip({
+      buildFutureTrip({
         origin_city: '  Rosario   del   Sur  ',
         destination_city: ' Santa   Fe ',
       }),
@@ -102,14 +113,14 @@ describe('POST /api/trips', () => {
 
     const response = await agent
       .post('/api/trips')
-      .send(buildTrip({ destination_city: 'CÓRDOBA' }));
+      .send(buildFutureTrip({ destination_city: 'CÓRDOBA' }));
 
     assert.equal(response.status, 201);
     assert.equal(response.body.trip.destination_city, 'CÓRDOBA');
   });
 
   it('responde 401 sin cookie', async () => {
-    const response = await request(app).post('/api/trips').send(buildTrip());
+    const response = await request(app).post('/api/trips').send(buildFutureTrip());
 
     assert.equal(response.status, 401);
     assert.deepEqual(response.body, { error: 'No autenticado' });
@@ -124,7 +135,7 @@ describe('POST /api/trips', () => {
     const response = await request(app)
       .post('/api/trips')
       .set('Cookie', `token=${token}`)
-      .send(buildTrip());
+      .send(buildFutureTrip());
 
     assert.equal(response.status, 401);
     assert.deepEqual(response.body, { error: 'No autenticado' });
@@ -141,7 +152,7 @@ describe('POST /api/trips', () => {
   for (const [field, message] of Object.entries(missingFields)) {
     it(`rechaza la falta de ${field}`, async () => {
       const { agent } = await registerAgent(`qa.test.trips.sin.${field}@example.com`);
-      const payload = buildTrip();
+      const payload = buildFutureTrip();
       delete payload[field];
 
       const response = await agent.post('/api/trips').send(payload);
@@ -234,25 +245,30 @@ describe('POST /api/trips', () => {
     },
     {
       name: 'una fecha sin offset',
-      overrides: { departure_time: '2030-01-01T10:00:00' },
+      overrides: { departure_time: futureDepartureTime().replace(/-03:00$/, '') },
       message:
         'La fecha de salida debe ser una fecha y hora ISO 8601 con zona horaria (por ejemplo 2030-01-01T10:00:00-03:00)',
     },
     {
       name: 'una fecha sin hora',
-      overrides: { departure_time: '2030-01-01' },
+      overrides: { departure_time: futureDepartureTime().slice(0, 10) },
       message:
         'La fecha de salida debe ser una fecha y hora ISO 8601 con zona horaria (por ejemplo 2030-01-01T10:00:00-03:00)',
     },
     {
       name: 'una fecha con día inexistente',
-      overrides: { departure_time: '2030-02-31T10:00:00Z' },
+      overrides: {
+        departure_time: futureDepartureTime().replace(
+          /^(\d{4})-\d{2}-\d{2}/,
+          '$1-02-31',
+        ),
+      },
       message:
         'La fecha de salida debe ser una fecha y hora ISO 8601 con zona horaria (por ejemplo 2030-01-01T10:00:00-03:00)',
     },
     {
       name: 'una fecha pasada',
-      overrides: { departure_time: '2020-01-01T10:00:00-03:00' },
+      overrides: { departure_time: futureDepartureTime(-DAY_MS) },
       message: 'La fecha de salida debe ser futura',
     },
   ];
@@ -263,7 +279,7 @@ describe('POST /api/trips', () => {
 
       const response = await agent
         .post('/api/trips')
-        .send(buildTrip(overrides));
+        .send(buildFutureTrip(overrides));
 
       assert.equal(response.status, 400);
       assert.equal(response.body.error, message);
