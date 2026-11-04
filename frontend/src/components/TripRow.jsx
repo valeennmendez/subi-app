@@ -19,29 +19,19 @@ export function TripRow({ trip, to, state, showStatus = true }) {
         </p>
       </div>
 
-      {isLink ? (
-        <div>
-          <span className="block text-sm text-muted">Asientos</span>
-          <span className="mt-0.5 block text-base font-semibold text-ink">
-            {trip.available_seats} de {trip.total_seats} asientos
-          </span>
-        </div>
-      ) : (
-        <p className="text-base text-ink">
+      <div>
+        <span className="block text-sm text-muted">Asientos</span>
+        <span className="mt-0.5 block text-base font-semibold text-ink">
           {trip.available_seats} de {trip.total_seats} asientos
-        </p>
-      )}
+        </span>
+      </div>
 
-      {isLink ? (
-        <div>
-          <span className="block text-sm text-muted">Precio por asiento</span>
-          <span className="mt-0.5 block text-base font-semibold text-ink">
-            {formatPrice(trip.price_per_seat)}
-          </span>
-        </div>
-      ) : (
-        <p className="text-base text-ink">{formatPrice(trip.price_per_seat)}</p>
-      )}
+      <div>
+        <span className="block text-sm text-muted">Precio por asiento</span>
+        <span className="mt-0.5 block text-base font-semibold text-ink">
+          {formatPrice(trip.price_per_seat)}
+        </span>
+      </div>
 
       <div className="flex items-center">
         {showStatus ? (
